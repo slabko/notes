@@ -1,0 +1,10 @@
+{% extends "shared/_layout.html" %}
+
+{% block title %}Edit Page{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        <textarea name="body" rows="50" cols="120">{{ page.body }}</textarea>
+        <input type="submit">
+    </form>
+{% endblock %}

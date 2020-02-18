@@ -1,0 +1,21 @@
+.page-content {
+    width: 60em;
+}
+
+.index-cell {
+    padding: 0.5em;
+}
+
+.cell-date {
+    float: left;
+    padding-right: 1em;
+}
+
+.cell-month {
+    display: inline;
+}
+
+.cell-day {
+    display: inline;
+    font-size: 2em;
+}

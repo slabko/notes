@@ -1,0 +1,25 @@
+{% extends "shared/_layout.html" %}
+
+{% block title %}Netes Index{% endblock %}
+
+{% block content %}
+  <a href='/pages/edit/'>Create New</a>
+  <table class='index-table'>
+    {% for n in notes %}
+    <tr class='index-row'>
+      <td class='index-cell'>
+      <div class='cell-date'>
+	    <div class='cell-day'>{{ n.created_at.day }}</div>
+	    <div class='cell-month'>{{ n.created_at.month }}</div>
+      </div>
+      <div class='cell-header'>
+          <a href='/pages/{{ n.created_at_int }}'>{{ n.title }}</a>
+      </div>
+      <div class='cell-preview'>
+        {{ n.preview }}...
+      </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

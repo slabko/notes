@@ -1,0 +1,19 @@
+{% extends "shared/_layout.html" %}
+
+{% block title %}Note Page{% endblock %}
+
+{% block scripts %}
+    <script>
+    MathJax = {
+      tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+{% endblock %}
+
+{% block content %}
+    <a href='edit/{{ page.created_at_int }}'>edit</a>
+    <div class='page-content'>
+        {{ content|safe }}
+    </div>
+{% endblock %}
