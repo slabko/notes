@@ -25,7 +25,7 @@ class Page(SqlAlchemyBase):
                    default=default_id)
     title = sa.Column(sa.String,
                       nullable=False)
-    preview = sa.Column(sa.String, 
+    preview = sa.Column(sa.String,
                         nullable=True)
     created_at = sa.Column(sa.DateTime(),
                            index=True,

@@ -1,7 +1,6 @@
 import flask
-import markdown
-import re
 from datetime import datetime
+from notes.text_processing.markdown import render
 from notes.data.dbsession import create_session
 from notes.data.page import Page
 from notes.data.history import History
@@ -20,8 +19,7 @@ def page(created_at_int):
         filter(Page.created_at_int == created_at_int).\
         first()
 
-    body = __text_preprocessor(page.body)
-    content = markdown.markdown(body, extensions=['fenced_code'])
+    content = render(page.body)
     return flask.render_template('pages/page.html', content=content, page=page)
 
 
@@ -80,31 +78,3 @@ def save(created_at_int):
     session.commit()
 
     return flask.redirect(f'/pages/{page.created_at_int}')
-
-
-def __text_preprocessor(text):
-    regex = re.compile(r'\$\$[^$]+\$\$', re.M)
-    index = 0
-    blocks = []
-    res = regex.finditer(text)
-    for x in res:
-        fr, to = x.span()
-        blocks.append(text[index:fr])
-        blocks.append('<div class="block-formula">')
-        blocks.append(text[fr:to])
-        blocks.append('</div>\n')
-        index = to
-    blocks.append(text[index:])
-    text = ''.join(blocks)
-
-    regex = re.compile(r'(?<!\$)\$(?!\$)[^$]+(?<!\$)\$(?!\$)')
-    index = 0
-    blocks = []
-    res = regex.finditer(text)
-    for x in res:
-        fr, to = x.span()
-        blocks.append(text[index:fr])
-        blocks.append(text[fr:to].replace('_', r'\_'))
-        index = to
-    blocks.append(text[index:])
-    return ''.join(blocks)
