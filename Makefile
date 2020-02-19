@@ -11,4 +11,4 @@ test:
 	python -m pytest tests/
 
 db:
-	python -m notes.bin.test_data
+	python -m notes.bin.make_test_data

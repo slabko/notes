@@ -1,6 +1,6 @@
 import os
 import flask
-import notes.data as data
+import notes.data.storage
 
 app = flask.Flask(__name__)
 
@@ -14,7 +14,7 @@ def main():
 def setup_db():
     current_directory = os.getcwd()
     db_path = os.path.join(current_directory, 'notes.sqlite')
-    data.dbsession.global_init(db_path)
+    notes.data.storage.init_main_storage('sqlite:///' + db_path)
 
 
 def register_blueprints():

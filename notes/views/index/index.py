@@ -1,14 +1,11 @@
 import flask
-from notes.data.page import Page
-from notes.data.dbsession import create_session
+from notes.data.storage import main_storage
 
 blueprint = flask.Blueprint('index', __name__, template_folder='templates')
 
 
 @blueprint.route('/')
 def index():
-    session = create_session()
-    notes = session.query(Page).\
-        order_by(Page.created_at.desc())
+    pages = main_storage().get_pages()
 
-    return flask.render_template('index/index.html', notes=notes)
+    return flask.render_template('index/index.html', notes=pages)

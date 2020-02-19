@@ -6,8 +6,7 @@ To run the script call
 
 """
 import os
-from notes.data import dbsession
-from notes.data.page import Page
+from notes.data import storage
 
 
 def main():
@@ -17,23 +16,14 @@ def main():
         markdown_content = fp.read()
 
     init_db()
-    session = dbsession.create_session()
-
-    page = Page()
-    title, text = markdown_content.lstrip().split('\n', 1)
-    page.title = title.lstrip('# ')
-    page.preview = text[:100]
-    page.body = markdown_content
-
-    session.add(page)
-    session.commit()
+    storage.main_storage.save_page(markdown_content)
 
 
 def init_db():
     current_directory = os.getcwd()
     db_path = os.path.join(current_directory, 'notes.sqlite')
     db_path = os.path.abspath(db_path)
-    dbsession.global_init(db_path)
+    storage.init_main_storage('sqlite:///' + db_path)
 
 
 if __name__ == "__main__":
