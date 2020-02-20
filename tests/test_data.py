@@ -1,33 +1,48 @@
 import pytest
 import datetime
 from notes.data.storage import Storage
-import notes.data.storage
 
 
 @pytest.fixture
-def storage():
+def storage() -> Storage:
     return Storage('sqlite://')
 
 
+@pytest.fixture
+def set_datetime(monkeypatch):
+    def patch_datetime(current_time):
+        monkeypatch.setattr(datetime.datetime, 'now', lambda: current_time)
+
+    return patch_datetime
+
+
 def test_multiline_article(storage: Storage):
-    body = '# Test page\n\nhello'
+    body = 'foo\nbar'
     id = storage.save_page(body)
 
     page = storage.get_page(id)
-    assert page.title == 'Test page'
+    assert page.title == 'foo'
     assert page.body == body
-    assert page.preview == 'hello'
+    assert page.preview == 'bar'
 
 
 def test_one_line_article(storage: Storage):
-    body = 'test'
+    body = 'foo'
     id = storage.save_page(body)
     page = storage.get_page(id)
-    assert page.title == 'test'
+    assert page.title == body
+    assert not page.preview
     assert page.body == body
 
 
-def test_get_all_pages(storage: Storage, monkeypatch):
+def test_article_with_markdown_header(storage: Storage):
+    body = '# foo'
+    id = storage.save_page(body)
+    page = storage.get_page(id)
+    assert page.title == 'foo'
+
+
+def test_get_all_pages(storage):
     body1, body2 = 'foo', 'bar'
     storage.save_page(body1)
     storage.save_page(body2)
@@ -38,7 +53,7 @@ def test_get_all_pages(storage: Storage, monkeypatch):
     assert pages[1].body == body2
 
 
-def test_page_update(storage: Storage):
+def test_page_update(storage):
     body1, body2 = 'foo\nbar', 'bar\nfoo'
     id = storage.save_page(body1)
     storage.save_page(body2, page_id=id)
@@ -48,16 +63,14 @@ def test_page_update(storage: Storage):
     assert page.preview == 'foo'
 
 
-def test_update_at(storage: Storage, monkeypatch):
+def test_update_at(storage, set_datetime):
     body1, body2 = 'foo', 'bar'
     id = storage.save_page(body1)
     page = storage.get_page(id)
     created_at = page.created_at
 
     current_time = created_at + datetime.timedelta(days=1)
-    monkeypatch.setattr(notes.data.storage,
-                        'current_time',
-                        lambda: current_time)
+    set_datetime(current_time)
 
     storage.save_page(body2, page_id=id)
     page = storage.get_page(id)
@@ -65,16 +78,11 @@ def test_update_at(storage: Storage, monkeypatch):
     assert page.updated_at == current_time
 
 
-def test_page_history(storage: Storage, monkeypatch):
+def test_page_history(storage, set_datetime):
     body1, body2 = 'foo\nbar', 'bar\nfoo'
     id = storage.save_page(body1)
     page = storage.get_page(id)
     created_at = page.created_at
-
-    current_time = created_at + datetime.timedelta(days=1)
-    monkeypatch.setattr(notes.data.storage,
-                        'current_time',
-                        lambda: current_time)
 
     storage.save_page(body2, page_id=id)
 

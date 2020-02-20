@@ -11,16 +11,13 @@ __main_storage = None
 
 
 def main_storage():
+    global __main_storage
     return __main_storage
 
 
 def init_main_storage(connection_string):
     global __main_storage
     __main_storage = Storage(connection_string)
-
-
-def current_time():
-    return datetime.now()
 
 
 class Storage:
@@ -44,7 +41,7 @@ class Storage:
             history.updated_at = page.updated_at
             session.add(history)
 
-            page.updated_at = current_time()
+            page.updated_at = datetime.now()
         else:
             page = Page()
             session.add(page)
