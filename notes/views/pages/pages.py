@@ -1,5 +1,5 @@
 import flask
-from notes.text_processing.markdown import render
+from notes.text_processing import markdown
 from notes.data.storage import main_storage
 from notes.data.page import Page
 
@@ -13,7 +13,7 @@ blueprint = flask.Blueprint(
 @blueprint.route('/pages/<page_id>')
 def page(page_id):
     page = main_storage().get_page(page_id)
-    content = render(page.body)
+    content = markdown.render(page.body)
     return flask.render_template('pages/page.html', content=content, page=page)
 
 

@@ -1,0 +1,20 @@
+from datetime import datetime
+from notes.data.page import Page
+
+page1 = Page(
+    id=1,
+    title='foo',
+    preview='bar',
+    created_at=datetime.now(),
+    updated_at=datetime.now(),
+    body='foo\nbar'
+)
+
+page2 = Page(
+    id=1,
+    title='bar',
+    preview='foo',
+    created_at=datetime.now(),
+    updated_at=datetime.now(),
+    body='bar\nfoo'
+)

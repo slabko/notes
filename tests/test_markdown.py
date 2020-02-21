@@ -1,4 +1,3 @@
-import pytest
 from notes.text_processing.markdown import render
 
 
@@ -24,21 +23,19 @@ def test_code():
     assert output == should
 
 
-@pytest.mark.skip('This is the problem I need to solve with markdown')
 def test_latex_inline_with_underline():
     text, should = __wrap(
         r'abc $ \mathop{P}_{2}=x_{4} $ abc',
-        r'<p>inline $ \mathop{P}_{2}=x_{4} $</p>'
+        r'<p>abc $ \mathop{P}_{2}=x_{4} $ abc</p>'
     )
     output = render(text)
     assert output == should
 
 
-@pytest.mark.skip('This is the problem I need to solve with markdown')
 def test_latex_with_ampersand():
     text, should = __wrap(
         r'$$ a & b & c \\ $$',
-        r'$$ a & b & c \\ $$'
+        r'$$ a & b & c \\ $$' + '\n'
     )
     output = render(text)
     assert output == should

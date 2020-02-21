@@ -1,19 +1,6 @@
-import pytest
 import datetime
+from freezegun import freeze_time
 from notes.data.storage import Storage
-
-
-@pytest.fixture
-def storage() -> Storage:
-    return Storage('sqlite://')
-
-
-@pytest.fixture
-def set_datetime(monkeypatch):
-    def patch_datetime(current_time):
-        monkeypatch.setattr(datetime.datetime, 'now', lambda: current_time)
-
-    return patch_datetime
 
 
 def test_multiline_article(storage: Storage):
@@ -63,22 +50,22 @@ def test_page_update(storage):
     assert page.preview == 'foo'
 
 
-def test_update_at(storage, set_datetime):
+def test_update_at(storage):
     body1, body2 = 'foo', 'bar'
     id = storage.save_page(body1)
     page = storage.get_page(id)
     created_at = page.created_at
 
     current_time = created_at + datetime.timedelta(days=1)
-    set_datetime(current_time)
+    with freeze_time(current_time):
+        storage.save_page(body2, page_id=id)
 
-    storage.save_page(body2, page_id=id)
     page = storage.get_page(id)
     assert page.body == body2
     assert page.updated_at == current_time
 
 
-def test_page_history(storage, set_datetime):
+def test_page_history(storage):
     body1, body2 = 'foo\nbar', 'bar\nfoo'
     id = storage.save_page(body1)
     page = storage.get_page(id)
