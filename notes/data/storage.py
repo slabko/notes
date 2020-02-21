@@ -5,19 +5,19 @@ from datetime import datetime
 from .basemetadata import SqlAlchemyBase
 from .page import Page
 from .history import History
+from .upload import Upload
 from . import __all_models  # noqa: F401
 
-__main_storage = None
+__main_service = None
 
 
-def main_storage():
-    global __main_storage
-    return __main_storage
+def main_service():
+    return __main_service
 
 
 def init_main_storage(connection_string):
-    global __main_storage
-    __main_storage = Storage(connection_string)
+    global __main_service
+    __main_service = Storage(connection_string)
 
 
 class Storage:
@@ -81,3 +81,30 @@ class Storage:
             all()
 
         return history
+
+    def register_attachement(self, page_id, file_name, file_id):
+        session = self.__factory()
+        upload = Upload(
+            id=file_id,
+            page_id=page_id,
+            file_name=file_name
+        )
+        session.add(upload)
+
+        existing = session.query(Upload).\
+            filter(Upload.id == page_id).\
+            filter(Upload.file_name == file_name).\
+            one()
+
+        if existing:
+            existing.delete()
+
+
+    def get_attachement_file_id(self, page_id, file_name) -> str:
+        session = self.__factory()
+        upload = session.query(Upload).\
+            filter(Upload.id == page_id).\
+            filter(Upload.file_name == file_name).\
+            one()
+
+        return upload.id

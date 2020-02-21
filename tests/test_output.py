@@ -1,6 +1,8 @@
 import re
+import io
 from unittest import mock
 from .samples import page1, page2
+from werkzeug.datastructures import FileStorage
 
 get_pages_target = 'notes.data.storage.Storage.get_pages'
 get_page_target = 'notes.data.storage.Storage.get_page'
@@ -71,3 +73,41 @@ def test_submit_edit(app):
 
     assert res.status_code == 302
     assert res.location == 'http://localhost/pages/1'
+
+
+uploads_path = '/pages/edit/1/attachements'
+form_data = 'multipart/form-data'
+
+
+def test_upload_file(app):
+    data = {
+        'page': '1',
+        'file': (io.BytesIO(b'file content'), 'file.txt')
+    }
+    with app.test_client() as client:
+        path = uploads_path
+        res = client.post(path, data=data, content_type=form_data)
+
+    assert res.status_code == 302
+    assert res.location == 'http://localhost/pages/1'
+
+
+def test_upload_without_file_part(app):
+    data = {'page': '1'}
+    with app.test_client() as client:
+        path = uploads_path
+        res = client.post(path, data=data, content_type=form_data)
+
+    assert res.status_code == 400
+
+
+def test_upload_without_file_name(app):
+    data = {
+        'page': '1',
+        'file': (io.BytesIO(b'file content'), '')
+    }
+    with app.test_client() as client:
+        path = uploads_path
+        res = client.post(path, data=data, content_type=form_data)
+
+    assert res.status_code == 400

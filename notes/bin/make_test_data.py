@@ -16,7 +16,7 @@ def main():
         markdown_content = fp.read()
 
     init_db()
-    storage.main_storage.save_page(markdown_content)
+    storage.main_service.save_page(markdown_content)
 
 
 def init_db():

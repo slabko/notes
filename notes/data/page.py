@@ -13,21 +13,35 @@ def defulat_updated_at_int(content):
 
 
 class Page(SqlAlchemyBase):
-    __tablename__ = 'page'
+    __tablename__ = 'pages'
 
-    id = sa.Column(sa.Integer,
-                   primary_key=True,
-                   autoincrement=True)
-    title = sa.Column(sa.String,
-                      nullable=False)
-    preview = sa.Column(sa.String,
-                        nullable=True)
-    created_at = sa.Column(sa.DateTime(),
-                           index=True,
-                           nullable=False,
-                           default=datetime.now)
-    updated_at = sa.Column(sa.DateTime(),
-                           index=True,
-                           nullable=False,
-                           default=defulat_updated_at_int)
-    body = sa.Column(sa.String, nullable=False)
+    id = sa.Column(
+        sa.Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+    title = sa.Column(
+        sa.String,
+        nullable=False
+    )
+    preview = sa.Column(
+        sa.String,
+        nullable=True
+    )
+    created_at = sa.Column(
+        sa.DateTime(),
+        index=True,
+        nullable=False,
+        default=datetime.now
+    )
+    updated_at = sa.Column(
+        sa.DateTime(),
+        index=True,
+        nullable=False,
+        default=defulat_updated_at_int
+    )
+
+    body = sa.Column(
+        sa.String, 
+        nullable=False
+    )
