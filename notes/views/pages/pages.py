@@ -62,6 +62,7 @@ def upload(page_id):
 
 
 @blueprint.route('/pages/<int:page_id>/<file_name>', methods=['GET'])
+@blueprint.route('/pages/edit/<int:page_id>/<file_name>', methods=['GET'])
 def read_file(page_id, file_name):
     file_path = uploads_service().read(page_id, file_name)
     return flask.send_file(file_path)

@@ -1,5 +1,6 @@
 import re
 import io
+import pytest
 from unittest import mock
 from .samples import page1, page2
 
@@ -139,7 +140,8 @@ def test_uploads_list(app):
         assert f'<a href="/pages/1/{f}">{f}</a>' in data
 
 
-def test_read_upload(app):
+@pytest.mark.parametrize("endpoint", ['/pages/1/{}', '/pages/edit/1/{}'])
+def test_read_upload(app, endpoint):
     file_name = 'foo.txt'
     file_content = 'file contennt'
     data = {
@@ -148,7 +150,7 @@ def test_read_upload(app):
     }
     with app.test_client() as client:
         client.post(uploads_path, data=data, content_type=form_data)
-        res = client.get(f'/pages/1/{file_name}')
+        res = client.get(endpoint.format(file_name))
     assert res.status_code == 200
     assert res.data.decode('utf-8') == file_content
 

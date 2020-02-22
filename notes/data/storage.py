@@ -118,7 +118,7 @@ class Storage:
     def delete_attachment(self, page_id, file_name):
         session = self.__factory()
 
-        upload = session.query(Upload).\
+        session.query(Upload).\
             filter(Upload.page_id == page_id).\
             filter(Upload.file_name == file_name).\
             delete()

@@ -62,7 +62,8 @@ def test_dollar_sign():
 
 def test_no_latex_in_offset_formatted_code():
     text = ('text\n\n    $code$ 1\n    code2\n\ntext')
-    expect = '<p>text</p>\n<pre><code>$code$ 1\ncode2\n</code></pre>\n<p>text</p>'
+    expect = ('<p>text</p>\n<pre><code>$code$ 1\ncode2\n'
+              '</code></pre>\n<p>text</p>')
     assert render(text) == expect
 
 

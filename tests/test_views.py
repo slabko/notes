@@ -118,7 +118,7 @@ def test_uploads_list(app, request_templates):
     assert context['files'] == files
 
 
-def test_submit_edit(app):
+def test_delete_file(app):
     file_name = 'foo.txt'
     delete_file_mock = mock.patch(delete_file_target)
     request_context = app.test_request_context(

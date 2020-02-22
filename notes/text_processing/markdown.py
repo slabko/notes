@@ -15,9 +15,14 @@ def render(text):
     code_block_marker = '<div id="code-block-marker-{}"></div>'
 
     # Remove all code blocks
-    code_quote_replace = replace_and_mark(code_quote_regex, code_quote_marker, text)
+    code_quote_replace = replace_and_mark(code_quote_regex,
+                                          code_quote_marker,
+                                          text)
     text, code_quote_markers = code_quote_replace
-    code_block_replace = replace_and_mark(code_block_regex, code_block_marker, text)
+
+    code_block_replace = replace_and_mark(code_block_regex,
+                                          code_block_marker,
+                                          text)
     text, code_block_markers = code_block_replace
 
     block_replace = replace_and_mark(latex_blocks_regex, block_marker, text)
@@ -32,6 +37,7 @@ def render(text):
     # Put code blocks back
     for k, v in code_quote_markers.items():
         text = text.replace(k, v)
+
     for k, v in code_block_markers.items():
         text = text.replace(k, v)
 
@@ -42,7 +48,6 @@ def render(text):
 
     for k, v in block_markers.items():
         text = text.replace(k, v)
-
 
     return text
 
