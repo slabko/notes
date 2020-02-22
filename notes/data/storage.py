@@ -11,11 +11,7 @@ from . import __all_models  # noqa: F401
 __main_service = None
 
 
-def main_service():
-    return __main_service
-
-
-def init_main_storage(connection_string):
+def init_main_service(connection_string):
     global __main_service
     __main_service = Storage(connection_string)
 
@@ -94,17 +90,34 @@ class Storage:
         existing = session.query(Upload).\
             filter(Upload.id == page_id).\
             filter(Upload.file_name == file_name).\
-            one()
+            first()
 
         if existing:
             existing.delete()
 
+        session.commit()
 
     def get_attachement_file_id(self, page_id, file_name) -> str:
         session = self.__factory()
         upload = session.query(Upload).\
-            filter(Upload.id == page_id).\
+            filter(Upload.page_id == page_id).\
             filter(Upload.file_name == file_name).\
             one()
 
         return upload.id
+
+    def get_page_attachments(self, page_id) -> List[Upload]:
+        session = self.__factory()
+
+        uploads = session.query(Upload).\
+            filter(Upload.page_id == page_id).\
+            all()
+
+        return uploads
+
+
+def main_service() -> Storage:
+    if __main_service:
+        return __main_service
+    else:
+        raise Exception('storage main service is not initialized')

@@ -1,6 +1,13 @@
 import datetime
+import pytest
+import uuid
 from freezegun import freeze_time
 from notes.data.storage import Storage
+
+
+@pytest.fixture
+def storage():
+    return Storage('sqlite://')
 
 
 def test_multiline_article(storage: Storage):
@@ -80,3 +87,29 @@ def test_page_history(storage):
     item = history[0]
     assert item.updated_at == created_at
     assert item.body == body1
+
+
+def test_attachement(storage):
+    file_id = str(uuid.uuid4())
+    id = storage.save_page('foobar')
+    storage.register_attachement(id, 'foo.txt', file_id)
+
+    res = storage.get_attachement_file_id(id, 'foo.txt')
+
+    assert res == file_id
+
+
+def test_get_page_attachments(storage):
+    file_ids = [str(uuid.uuid4()) for x in range(4)]
+    file_names = [f'foo_{x}.txt' for x in range(4)]
+    page_id = storage.save_page('foobar')
+    for file_id, file_name in zip(file_ids, file_names):
+        storage.register_attachement(page_id, file_name, file_id)
+
+    # Fake record
+    storage.register_attachement(2, 'foo.txt', str(uuid.uuid4()))
+
+    res = storage.get_page_attachments(page_id)
+
+    assert file_ids == [a.id for a in res]
+    assert file_names == [a.file_name for a in res]

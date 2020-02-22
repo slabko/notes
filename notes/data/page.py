@@ -42,6 +42,6 @@ class Page(SqlAlchemyBase):
     )
 
     body = sa.Column(
-        sa.String, 
+        sa.String,
         nullable=False
     )

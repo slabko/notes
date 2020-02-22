@@ -2,24 +2,22 @@ import pytest
 from contextlib import contextmanager
 import notes.app
 import notes.data.storage
+import notes.data.uploads
 import notes.views.index
-from notes.data.storage import Storage
-
 from flask import template_rendered
-import notes.app
-
-
-@pytest.fixture
-def storage():
-    return Storage('sqlite://')
+from tempfile import TemporaryDirectory
 
 
 @pytest.fixture
 def app():
     notes.app.app.config['TESTING'] = True
     notes.app.register_blueprints()
-    notes.data.storage.init_main_storage('sqlite://')
-    return notes.app.app
+    notes.data.storage.init_main_service('sqlite://')
+
+    with TemporaryDirectory() as temp_dir:
+        notes.data.uploads.init_main_service(temp_dir)
+        notes.app.app.uploads_path = temp_dir
+        yield notes.app.app
 
 
 @contextmanager

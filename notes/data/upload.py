@@ -11,9 +11,16 @@ class Upload(SqlAlchemyBase):
         primary_key=True
     )
 
+    page_id = sa.Column(
+        sa.Integer,
+        nullable=False,
+        index=True
+    )
+
     file_name = sa.Column(
         sa.String,
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     created_at = sa.Column(
@@ -22,3 +29,6 @@ class Upload(SqlAlchemyBase):
         nullable=False,
         default=datetime.now
     )
+
+    def __repr__(self):
+        return f'Upload({self.id}, {self.page_id}, {self.file_name}'

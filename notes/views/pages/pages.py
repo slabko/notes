@@ -1,6 +1,7 @@
 import flask
 from notes.text_processing import markdown
-from notes.data.storage import main_service
+from notes.data.storage import main_service as storage_service
+from notes.data.uploads import main_service as uploads_service
 from notes.data.page import Page
 from werkzeug.utils import secure_filename
 
@@ -11,16 +12,22 @@ blueprint = flask.Blueprint(
 )
 
 
-@blueprint.route('/pages/<page_id>')
+@blueprint.route('/pages/<page_id>/')
 def page(page_id):
-    page = main_service().get_page(page_id)
+    page = storage_service().get_page(page_id)
+    files = uploads_service().list(page_id)
     content = markdown.render(page.body)
-    return flask.render_template('pages/page.html', content=content, page=page)
+    return flask.render_template(
+        'pages/page.html',
+        content=content,
+        page=page,
+        files=files
+    )
 
 
-@blueprint.route('/pages/edit/<page_id>', methods=['GET'])
+@blueprint.route('/pages/edit/<page_id>/', methods=['GET'])
 def edit(page_id):
-    page = main_service().get_page(page_id)
+    page = storage_service().get_page(page_id)
     return flask.render_template('pages/edit.html', page=page)
 
 
@@ -32,24 +39,23 @@ def edit_new():
     return flask.render_template('pages/edit.html', page=page)
 
 
-@blueprint.route('/pages/edit/',
-                 defaults={'page_id': None},
-                 methods=['POST'])
-@blueprint.route('/pages/edit/<page_id>', methods=['POST'])
+@blueprint.route('/pages/edit/', defaults={'page_id': None}, methods=['POST'])
+@blueprint.route('/pages/edit/<page_id>/', methods=['POST'])
 def save(page_id):
     body = flask.request.form['body']
-    page_id = main_service().save_page(body, page_id)
-    return flask.redirect(f'/pages/{page_id}')
+    page_id = storage_service().save_page(body, page_id)
+    return flask.redirect(f'/pages/{page_id}/')
 
 
-@blueprint.route('/pages/edit/<page_id>/attachements', methods=['POST'])
+@blueprint.route('/pages/edit/<page_id>/attachements/', methods=['POST'])
 def upload(page_id):
-    if not 'file' in flask.request.files:
+    if 'file' not in flask.request.files:
         return 'No file part', 400
     file = flask.request.files['file']
-    if not file.filename:
+    file_name = file.filename
+    if not file_name:
         return 'No file name', 400
 
-    filename = secure_filename(file.name)
-    # print(filename, file.stream.read())
-    return flask.redirect(f'/pages/{page_id}')
+    filename = secure_filename(file_name)
+    uploads_service().upload(page_id, filename, file.stream)
+    return flask.redirect(f'/pages/{page_id}/')

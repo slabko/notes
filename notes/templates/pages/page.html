@@ -12,8 +12,21 @@
 {% endblock %}
 
 {% block content %}
-    <a href='edit/{{ page.id }}'>edit</a>
+    <a href='/pages/edit/{{ page.id }}/'>edit</a>
     <div class='page-content'>
         {{ content|safe }}
     </div>
+
+    <form action="/pages/edit/{{ page.id }}/attachements/" method="POST" enctype="multipart/form-data">
+        <input type="hidden" value="{{ page.id }}">
+        <input type="file" name="file" id="file">
+        <input type="submit">
+    </form>
+
+    <div class='file-list'>
+        {% for file in files %}
+            <a href="/pages/1/{{ file }}">{{ file }}</a>
+        {% endfor %}
+    </div>
+
 {% endblock %}

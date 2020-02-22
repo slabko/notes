@@ -23,7 +23,7 @@ def init_db():
     current_directory = os.getcwd()
     db_path = os.path.join(current_directory, 'notes.sqlite')
     db_path = os.path.abspath(db_path)
-    storage.init_main_storage('sqlite:///' + db_path)
+    storage.init_main_service('sqlite:///' + db_path)
 
 
 if __name__ == "__main__":
