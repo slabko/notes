@@ -42,6 +42,10 @@ class Uploads:
         file_names = [u.file_name for u in uploads]
         return file_names
 
+    def delete(self, page_id, file_name):
+        storage_service = storage.main_service()
+        storage_service.delete_attachment(page_id, file_name)
+
 
 def main_service() -> Uploads:
     if __main_service:

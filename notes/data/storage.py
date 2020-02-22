@@ -115,6 +115,16 @@ class Storage:
 
         return uploads
 
+    def delete_attachment(self, page_id, file_name):
+        session = self.__factory()
+
+        upload = session.query(Upload).\
+            filter(Upload.page_id == page_id).\
+            filter(Upload.file_name == file_name).\
+            delete()
+
+        session.commit()
+
 
 def main_service() -> Storage:
     if __main_service:

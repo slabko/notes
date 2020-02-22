@@ -12,7 +12,7 @@ blueprint = flask.Blueprint(
 )
 
 
-@blueprint.route('/pages/<page_id>/')
+@blueprint.route('/pages/<int:page_id>/')
 def page(page_id):
     page = storage_service().get_page(page_id)
     files = uploads_service().list(page_id)
@@ -25,7 +25,7 @@ def page(page_id):
     )
 
 
-@blueprint.route('/pages/edit/<page_id>/', methods=['GET'])
+@blueprint.route('/pages/edit/<int:page_id>/', methods=['GET'])
 def edit(page_id):
     page = storage_service().get_page(page_id)
     return flask.render_template('pages/edit.html', page=page)
@@ -40,14 +40,14 @@ def edit_new():
 
 
 @blueprint.route('/pages/edit/', defaults={'page_id': None}, methods=['POST'])
-@blueprint.route('/pages/edit/<page_id>/', methods=['POST'])
+@blueprint.route('/pages/edit/<int:page_id>/', methods=['POST'])
 def save(page_id):
     body = flask.request.form['body']
     page_id = storage_service().save_page(body, page_id)
     return flask.redirect(f'/pages/{page_id}/')
 
 
-@blueprint.route('/pages/edit/<page_id>/attachements/', methods=['POST'])
+@blueprint.route('/pages/edit/<int:page_id>/attachements/', methods=['POST'])
 def upload(page_id):
     if 'file' not in flask.request.files:
         return 'No file part', 400
@@ -58,4 +58,17 @@ def upload(page_id):
 
     filename = secure_filename(file_name)
     uploads_service().upload(page_id, filename, file.stream)
+    return flask.redirect(f'/pages/{page_id}/')
+
+
+@blueprint.route('/pages/<int:page_id>/<file_name>', methods=['GET'])
+def read_file(page_id, file_name):
+    file_path = uploads_service().read(page_id, file_name)
+    return flask.send_file(file_path)
+
+
+@blueprint.route('/pages/edit/<int:page_id>/attachements/<file_name>/delete',
+                 methods=['POST'])
+def dalete_file(page_id, file_name):
+    uploads_service().delete(page_id, file_name)
     return flask.redirect(f'/pages/{page_id}/')

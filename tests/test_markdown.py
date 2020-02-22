@@ -1,3 +1,4 @@
+import pytest
 from notes.text_processing.markdown import render
 
 
@@ -39,6 +40,47 @@ def test_latex_with_ampersand():
     )
     output = render(text)
     assert output == should
+
+
+def test_no_latex_in_code():
+    text, should = __wrap(
+        '```\n$ sh test.sh\n$ ls\n```',
+        '<pre><code>$ sh test.sh\n$ ls\n</code></pre>\n'
+    )
+    output = render(text)
+    assert output == should
+
+
+def test_dollar_sign():
+    text, should = __wrap(
+        r'I have \$10 and _you_ have \$20',
+        r'<p>I have $10 and <em>you</em> have $20</p>'
+    )
+    output = render(text)
+    assert output == should
+
+
+def test_no_latex_in_offset_formatted_code():
+    text = ('text\n\n    $code$ 1\n    code2\n\ntext')
+    expect = '<p>text</p>\n<pre><code>$code$ 1\ncode2\n</code></pre>\n<p>text</p>'
+    assert render(text) == expect
+
+
+def test_escaped_dollar_sign_in_code():
+    text, should = __wrap(
+        '```\n$ cp . arc\\$(pwd)\n$ ls\n```',
+        '<pre><code>$ cp . arc\\$(pwd)\n$ ls\n</code></pre>\n'
+    )
+    output = render(text)
+    assert output == should
+
+
+@pytest.mark.skip('Bug in the markdown library')
+def test_markdown_with_escpaed_dollar_sign():
+    from markdown import markdown
+    text = '```\n$ cp . arc\\$(pwd)\n```'
+    should = '<pre><code>$ cp . arc\\$(pwd)</code></pre>\n'
+    assert markdown(text) == should
 
 
 def __wrap(text, output):

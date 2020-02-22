@@ -12,6 +12,7 @@ save_page_target = 'notes.data.storage.Storage.save_page'
 renderer_target = 'notes.text_processing.markdown.render'
 upload_file_target = 'notes.data.uploads.Uploads.upload'
 list_uploads_target = 'notes.data.uploads.Uploads.list'
+delete_file_target = 'notes.data.uploads.Uploads.delete'
 
 a_string = 'some markdown result'
 
@@ -115,3 +116,18 @@ def test_uploads_list(app, request_templates):
     template, context = ts[0]
 
     assert context['files'] == files
+
+
+def test_submit_edit(app):
+    file_name = 'foo.txt'
+    delete_file_mock = mock.patch(delete_file_target)
+    request_context = app.test_request_context(
+        path=f'/pages/edit/1/attachements/{file_name}',
+    )
+    with request_context, delete_file_mock as delete_file:
+        res = notes.views.pages.pages.dalete_file(1, file_name)
+
+    delete_file.assert_called_once_with(1, file_name)
+
+    assert res.status_code == 302
+    assert res.location == '/pages/1/'

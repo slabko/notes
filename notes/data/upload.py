@@ -31,4 +31,4 @@ class Upload(SqlAlchemyBase):
     )
 
     def __repr__(self):
-        return f'Upload({self.id}, {self.page_id}, {self.file_name}'
+        return f'Upload({self.id}, {self.page_id}, {self.file_name})'

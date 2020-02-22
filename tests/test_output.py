@@ -8,6 +8,7 @@ get_page_target = 'notes.data.storage.Storage.get_page'
 save_page_target = 'notes.data.storage.Storage.save_page'
 renderer_target = 'notes.text_processing.markdown.render'
 list_uploads_target = 'notes.data.uploads.Uploads.list'
+delete_file_target = 'notes.data.uploads.Uploads.delete'
 
 a_string = 'some markdown result'
 
@@ -99,8 +100,7 @@ def test_upload_file(app):
         'file': (io.BytesIO(b'file content'), 'file.txt')
     }
     with app.test_client() as client:
-        path = uploads_path
-        res = client.post(path, data=data, content_type=form_data)
+        res = client.post(uploads_path, data=data, content_type=form_data)
 
     assert res.status_code == 302
     assert res.location == 'http://localhost/pages/1/'
@@ -137,3 +137,31 @@ def test_uploads_list(app):
 
     for f in files:
         assert f'<a href="/pages/1/{f}">{f}</a>' in data
+
+
+def test_read_upload(app):
+    file_name = 'foo.txt'
+    file_content = 'file contennt'
+    data = {
+        'page': '1',
+        'file': (io.BytesIO(file_content.encode('utf-8')), file_name)
+    }
+    with app.test_client() as client:
+        client.post(uploads_path, data=data, content_type=form_data)
+        res = client.get(f'/pages/1/{file_name}')
+    assert res.status_code == 200
+    assert res.data.decode('utf-8') == file_content
+
+
+def test_delete_upload(app):
+    file_name = 'foo.txt'
+    delete_file_mock = mock.patch(delete_file_target)
+    with app.test_client() as client, delete_file_mock as delete_file:
+        res = client.post(f'/pages/edit/1/attachements/{file_name}/delete')
+
+    delete_file.assert_called_once_with(1, file_name)
+
+    assert res.status_code == 302
+    assert res.location == 'http://localhost/pages/1/'
+
+# TODO: Test delete links are present

@@ -7,8 +7,8 @@ from notes.data.upload import Upload
 
 register_attachement_target = 'notes.data.storage.Storage.register_attachement'
 get_file_id_target = 'notes.data.storage.Storage.get_attachement_file_id'
-get_page_attachements_target = \
-    'notes.data.storage.Storage.get_page_attachments'
+get_files_target = 'notes.data.storage.Storage.get_page_attachments'
+delete_file_target = 'notes.data.storage.Storage.delete_attachment'
 
 
 def test_upload_file_to_page(app):
@@ -40,6 +40,14 @@ def test_read_file(app):
         assert res == os.path.join(app.uploads_path, '1', file_id)
 
 
+def test_delete(app):
+    file_name = 'foo.txt'
+    delete_file_mock = mock.patch(delete_file_target)
+    with delete_file_mock as delete_file:
+        notes.data.uploads.main_service().delete(1, file_name)
+    delete_file.assert_called_once_with(1, file_name)
+
+
 def test_list(app):
     page_id = 1
     items = [Upload(
@@ -49,7 +57,7 @@ def test_list(app):
     ) for x in range(3)]
 
     get_attachements_mock = mock.patch(
-        target=get_page_attachements_target,
+        target=get_files_target,
         return_value=items
     )
 

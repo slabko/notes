@@ -113,3 +113,19 @@ def test_get_page_attachments(storage):
 
     assert file_ids == [a.id for a in res]
     assert file_names == [a.file_name for a in res]
+
+
+def test_delete_attachment(storage: Storage):
+    file_ids = [str(uuid.uuid4()) for x in range(3)]
+    file_names = [f'foo_{x}.txt' for x in range(3)]
+    id = storage.save_page('foobar')
+    for file_id, file_name in zip(file_ids, file_names):
+        storage.register_attachement(id, file_name, file_id)
+
+    storage.delete_attachment(id, file_names[1])
+
+    res = storage.get_page_attachments(id)
+
+    file_names = file_names[:1] + file_names[2:]
+    stored_file_names = [u.file_name for u in res]
+    assert file_names == stored_file_names

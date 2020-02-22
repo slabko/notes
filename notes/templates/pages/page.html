@@ -24,9 +24,20 @@
     </form>
 
     <div class='file-list'>
+        <table>
         {% for file in files %}
-            <a href="/pages/1/{{ file }}">{{ file }}</a>
+        <tr>
+            <td>
+                <a href="/pages/1/{{ file }}">{{ file }}</a>
+            </td>
+            <td>
+                <form action="/pages/edit/{{ page.id }}/attachements/{{ file }}/delete" method="post">
+                 <button type="submit">delete</button>
+              </form>
+            </td>
+        </tr>
         {% endfor %}
+        </table>
     </div>
 
 {% endblock %}
