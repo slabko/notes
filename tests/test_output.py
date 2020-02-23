@@ -1,6 +1,8 @@
 import re
 import io
+import os
 import pytest
+import tempfile
 from unittest import mock
 from .samples import page1, page2
 
@@ -10,8 +12,15 @@ save_page_target = 'notes.data.storage.Storage.save_page'
 renderer_target = 'notes.text_processing.markdown.render'
 list_uploads_target = 'notes.data.uploads.Uploads.list'
 delete_file_target = 'notes.data.uploads.Uploads.delete'
+read_file_target = 'notes.data.uploads.Uploads.read'
 
 a_string = 'some markdown result'
+
+mime_types = [
+    ('.txt', 'text/plain; charset=utf-8'),
+    ('.jpg', 'image/jpeg'),
+    ('.none', 'application/octet-stream') 
+]
 
 
 def test_empty_index(app):
@@ -144,17 +153,26 @@ def test_uploads_list(app, page):
 
 @pytest.mark.parametrize("endpoint", ['/pages/1/{}', '/pages/edit/1/{}'])
 def test_read_upload(app, endpoint):
-    file_name = 'foo.txt'
     file_content = 'file contennt'
-    data = {
-        'page': '1',
-        'file': (io.BytesIO(file_content.encode('utf-8')), file_name)
-    }
-    with app.test_client() as client:
-        client.post(uploads_path, data=data, content_type=form_data)
+    temp_file = tempfile.NamedTemporaryFile(prefix='.txt')
+    read_mock = mock.patch(read_file_target, return_value=temp_file.name)
+    file_name = os.path.basename(temp_file.name)
+    with read_mock, temp_file as tf, app.test_client() as client:
+        tf.write(file_content.encode('utf-8'))
+        tf.flush()
         res = client.get(endpoint.format(file_name))
     assert res.status_code == 200
     assert res.data.decode('utf-8') == file_content
+
+
+@pytest.mark.parametrize("ext, mime_type", mime_types)
+def test_read_upload_returns_correct_mimetype(app, ext, mime_type):
+    temp_file = tempfile.NamedTemporaryFile(suffix=ext)
+    read_mock = mock.patch(read_file_target, return_value=temp_file.name)
+    file_name = os.path.basename(temp_file.name)
+    with read_mock, temp_file, app.test_client() as client:
+        res = client.get(f'/pages/1/{file_name}')
+    assert res.content_type == mime_type
 
 
 def test_delete_upload(app):

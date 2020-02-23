@@ -45,3 +45,8 @@ class Page(SqlAlchemyBase):
         sa.String,
         nullable=False
     )
+
+    def __repr__(self):
+        return (f'Page(id={self.id}, title={self.title}, '
+                f'preview={self.preview}, created_at={self.created_at}, '
+                f'updated_at={self.updated_at}, body={self.body})')

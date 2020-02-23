@@ -1,4 +1,5 @@
 import flask
+import mimetypes
 from notes.text_processing import markdown
 from notes.data.storage import main_service as storage_service
 from notes.data.uploads import main_service as uploads_service
@@ -65,7 +66,8 @@ def upload(page_id):
 @blueprint.route('/pages/edit/<int:page_id>/<file_name>', methods=['GET'])
 def read_file(page_id, file_name):
     file_path = uploads_service().read(page_id, file_name)
-    return flask.send_file(file_path)
+    mime_type, _ = mimetypes.guess_type(file_name)
+    return flask.send_file(file_path, mimetype=mime_type)
 
 
 @blueprint.route('/pages/edit/<int:page_id>/attachements/<file_name>/delete',

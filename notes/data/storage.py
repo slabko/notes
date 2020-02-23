@@ -31,6 +31,9 @@ class Storage:
                 filter(Page.id == page_id).\
                 first()
 
+            if page.body == body:
+                return page_id
+
             history = History()
             history.page_id = page.id
             history.body = page.body

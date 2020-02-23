@@ -89,6 +89,21 @@ def test_page_history(storage):
     assert item.body == body1
 
 
+def test_save_without_update_does_not_make_an_update(storage):
+    body = 'foo\nbar'
+    id = storage.save_page(body)
+    page = storage.get_page(id)
+    created_at = page.created_at
+
+    current_time = created_at + datetime.timedelta(days=1)
+    with freeze_time(current_time):
+        storage.save_page(body, page_id=id)
+
+    another = storage.get_page(id)
+    assert another.updated_at == page.updated_at
+    assert len(storage.get_history_for_page(id)) == 0
+
+
 def test_attachement(storage):
     file_id = str(uuid.uuid4())
     id = storage.save_page('foobar')
