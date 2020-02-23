@@ -19,7 +19,7 @@ a_string = 'some markdown result'
 mime_types = [
     ('.txt', 'text/plain; charset=utf-8'),
     ('.jpg', 'image/jpeg'),
-    ('.none', 'application/octet-stream') 
+    ('.none', 'application/octet-stream')
 ]
 
 
