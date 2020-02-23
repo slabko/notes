@@ -126,18 +126,20 @@ def test_upload_without_file_name(app):
     assert res.status_code == 400
 
 
-def test_uploads_list(app):
+@pytest.mark.parametrize('page', [page1, page2])
+def test_uploads_list(app, page):
     files = ['foo.txt', 'bar.txt']
-    storage = mock.patch(get_page_target, return_value=page1)
+    storage = mock.patch(get_page_target, return_value=page)
     uploads = mock.patch(list_uploads_target, return_value=files)
     markdown = mock.patch(renderer_target, return_value=a_string)
 
     with storage, uploads, markdown, app.test_client() as client:
-        res = client.get('/pages/1/')
+        res = client.get(f'/pages/{page.id}/')
     data = res.data.decode('utf-8')
+    print(data)
 
     for f in files:
-        assert f'<a href="/pages/1/{f}">{f}</a>' in data
+        assert f'<a href="/pages/{page.id}/{f}">{f}</a>' in data
 
 
 @pytest.mark.parametrize("endpoint", ['/pages/1/{}', '/pages/edit/1/{}'])

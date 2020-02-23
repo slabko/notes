@@ -28,7 +28,7 @@
         {% for file in files %}
         <tr>
             <td>
-                <a href="/pages/1/{{ file }}">{{ file }}</a>
+                <a href="/pages/{{ page.id }}/{{ file }}">{{ file }}</a>
             </td>
             <td>
                 <form action="/pages/edit/{{ page.id }}/attachements/{{ file }}/delete" method="post">
