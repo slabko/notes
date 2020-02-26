@@ -26,8 +26,26 @@ def test_code():
 
 def test_latex_inline_with_underline():
     text, should = __wrap(
-        r'abc $ \mathop{P}_{2}=x_{4} $ abc',
-        r'<p>abc $ \mathop{P}_{2}=x_{4} $ abc</p>'
+        r'abc \( \mathop{P}_{2}=x_{4} \) abc',
+        r'<p>abc \( \mathop{P}_{2}=x_{4} \) abc</p>'
+    )
+    output = render(text)
+    assert output == should
+
+
+def test_escape_latex_markers():
+    text, should = __wrap(
+        r'abc \\( some _not_ latex text \) abc',
+        r'<p>abc \( some <em>not</em> latex text ) abc</p>'
+    )
+    output = render(text)
+    assert output == should
+
+
+def test_escape_in_code_remains_unchanged():
+    text, should = __wrap(
+        r'abc `\\( some _not_ latex text \)` abc',
+        r'<p>abc <code>\\( some _not_ latex text \)</code> abc</p>'
     )
     output = render(text)
     assert output == should
@@ -44,36 +62,38 @@ def test_latex_with_ampersand():
 
 def test_no_latex_in_code():
     text, should = __wrap(
-        '```\n$ sh test.sh\n$ ls\n```',
-        '<pre><code>$ sh test.sh\n$ ls\n</code></pre>\n'
-    )
-    output = render(text)
-    assert output == should
-
-
-def test_dollar_sign():
-    text, should = __wrap(
-        r'I have \$10 and _you_ have \$20',
-        r'<p>I have $10 and <em>you</em> have $20</p>'
+        '\n'.join([
+            r'```',
+            r' $$ sh test.sh',
+            r' $$ ls',
+            r'```']),
+        '\n'.join([
+            r'<pre><code> $$ sh test.sh',
+            r' $$ ls',
+            r'</code></pre>',
+            r''])
     )
     output = render(text)
     assert output == should
 
 
 def test_no_latex_in_offset_formatted_code():
-    text = ('text\n\n    $code$ 1\n    code2\n\ntext')
-    expect = ('<p>text</p>\n<pre><code>$code$ 1\ncode2\n'
-              '</code></pre>\n<p>text</p>')
+    text = '\n'.join([
+        r'text',
+        r'',
+        r'    \(code\) 1',
+        r'    code2',
+        r'',
+        r'text'
+    ])
+    expect = '\n'.join([
+        r'<p>text</p>',
+        r'<pre><code>\(code\) 1',
+        r'code2',
+        r'</code></pre>',
+        r'<p>text</p>'
+    ])
     assert render(text) == expect
-
-
-def test_escaped_dollar_sign_in_code():
-    text, should = __wrap(
-        '```\n$ cp . arc\\$(pwd)\n$ ls\n```',
-        '<pre><code>$ cp . arc\\$(pwd)\n$ ls\n</code></pre>\n'
-    )
-    output = render(text)
-    assert output == should
 
 
 @pytest.mark.skip('Bug in the markdown library')

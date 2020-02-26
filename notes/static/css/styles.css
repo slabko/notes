@@ -51,3 +51,7 @@
     line-height: 1.5;
     word-wrap: break-word;
 }
+
+.text-mono {
+    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace!important;
+}

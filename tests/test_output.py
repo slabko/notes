@@ -83,10 +83,8 @@ def test_edit_page(app):
     data = res.data.decode('utf-8')
 
     assert(res.status_code == 200)
-    page_content = '<textarea name="body" rows="50" cols="120">' +\
-                   page1.body +\
-                   '</textarea>'
-    assert page_content in data
+    assert '<textarea name="body"' in data
+    assert page1.body in data
     assert '<form method="POST">' in data
     assert '<input type="submit">' in data
 

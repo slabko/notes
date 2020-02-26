@@ -2,24 +2,13 @@
 
 {% block title %}Edit Page{% endblock %}
 
-{% block scripts %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-{% endblock %}
-
-
 {% block content %}
     <form method="POST">
-        <textarea name="body" rows="50" cols="120">{{ page.body }}</textarea>
-        <input type="submit">
+        <div>
+            <textarea name="body" class='text-mono' rows="50" cols="80">{{ page.body }}</textarea>
+        </div>
+        <div>
+            <input type="submit">
+        </div>
     </form>
-    <script>
-	    var simplemde = new SimpleMDE({
-	        autosave: {
-	           enabled: true,
-	           uniqueId: "page-{{ page.id }}"
-	        },
-		spellChecker: false
-	    });
-    </script>
 {% endblock %}

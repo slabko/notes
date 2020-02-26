@@ -5,7 +5,7 @@ from typing import Tuple, Dict
 
 def render(text):
     latex_blocks_regex = re.compile(r'\$\$[^$]+\$\$', re.M)
-    latex_inline_regex = re.compile(r'(?<!\\)(?<!\$)\$[^$]+(?<!\\)\$(?!\$)')
+    latex_inline_regex = re.compile(r'(?<!\\)\\\(.*?(?<!\\)\\\)')
     code_quote_regex = re.compile(r'(```|`)[^`]+(```|`)', re.M)
     code_block_regex = re.compile(r'\n\n(^ {4}.*)+', re.M | re.DOTALL)
 
