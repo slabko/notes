@@ -21,8 +21,7 @@ def setup_db():
 def setup_uploads():
     current_directory = os.getcwd()
     uploads_path = os.path.join(current_directory, 'attachemtns/')
-    print(uploads_path)
-    notes.data.uploads.init_main_service(uploads_path)
+    notes.services.attachment_service.init_main_service(uploads_path)
 
 
 def register_blueprints():

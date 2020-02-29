@@ -18,7 +18,7 @@ class AttachmentStorage:
     def __init__(self, path: str):
         self.__path = path
 
-    def upload(self, page_id, file_name, stream):
+    def save_attachment(self, page_id, file_name, stream):
         file_id = str(uuid.uuid4())
         page_path = os.path.join(self.__path, str(page_id))
         file_path = os.path.join(page_path, file_id)
@@ -30,19 +30,19 @@ class AttachmentStorage:
         storage_service = registry_service.main_service()
         storage_service.register_attachment(page_id, file_name, file_id)
 
-    def read(self, page_id, file_name) -> str:
+    def get_attachment_path(self, page_id, file_name) -> str:
         storage_service = registry_service.main_service()
         file_id = storage_service.get_attachment_file_id(page_id, file_name)
         file_path = os.path.join(self.__path, str(page_id), file_id)
         return file_path
 
-    def list(self, page_id) -> List[str]:
+    def list_attachments(self, page_id) -> List[str]:
         storage_service = registry_service.main_service()
         uploads = storage_service.get_page_attachments(page_id)
         file_names = [u.file_name for u in uploads]
         return file_names
 
-    def delete(self, page_id, file_name):
+    def delete_attachment(self, page_id, file_name):
         storage_service = registry_service.main_service()
         storage_service.delete_attachment(page_id, file_name)
 

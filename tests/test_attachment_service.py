@@ -18,7 +18,7 @@ def test_upload_file_to_page(app):
     with register_attachment_mock as register_attachment:
         uploads = notes.services.attachment_service.main_service()
         file_content = io.BytesIO(file_content_str.encode('utf-8'))
-        uploads.upload(1, 'foo.txt', file_content)
+        uploads.save_attachment(1, 'foo.txt', file_content)
 
         page_dir = os.path.join(app.uploads_path, '1')
         page_files = os.listdir(page_dir)
@@ -36,7 +36,7 @@ def test_read_file(app):
     get_file_id_mock = mock.patch(get_file_id_target, return_value=file_id)
     with get_file_id_mock:
         uploads = notes.services.attachment_service.main_service()
-        res = uploads.read(1, 'foo.txt')
+        res = uploads.get_attachment_path(1, 'foo.txt')
         assert res == os.path.join(app.uploads_path, '1', file_id)
 
 
@@ -44,7 +44,7 @@ def test_delete(app):
     file_name = 'foo.txt'
     delete_file_mock = mock.patch(delete_file_target)
     with delete_file_mock as delete_file:
-        notes.services.attachment_service.main_service().delete(1, file_name)
+        notes.services.attachment_service.main_service().delete_attachment(1, file_name)
     delete_file.assert_called_once_with(1, file_name)
 
 
@@ -63,6 +63,6 @@ def test_list(app):
 
     with get_attachments_mock:
         uploads = notes.services.attachment_service.main_service()
-        res = uploads.list(page_id)
+        res = uploads.list_attachments(page_id)
 
     assert res == [u.file_name for u in items]

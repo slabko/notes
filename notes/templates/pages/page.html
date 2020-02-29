@@ -12,7 +12,7 @@
         {{ content|safe }}
     </div>
 
-    <form action="/pages/edit/{{ page.id }}/attachements/" method="POST" enctype="multipart/form-data">
+    <form action="/pages/edit/{{ page.id }}/attachments/" method="POST" enctype="multipart/form-data">
         <input type="hidden" value="{{ page.id }}">
         <input type="file" name="file" id="file">
         <input type="submit">
@@ -26,7 +26,7 @@
                 <a href="/pages/{{ page.id }}/{{ file }}">{{ file }}</a>
             </td>
             <td>
-                <form action="/pages/edit/{{ page.id }}/attachements/{{ file }}/delete" method="post">
+                <form action="/pages/edit/{{ page.id }}/attachments/{{ file }}/delete" method="post">
                  <button type="submit">delete</button>
               </form>
             </td>

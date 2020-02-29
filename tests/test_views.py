@@ -10,9 +10,9 @@ get_pages_target = 'notes.services.RegistryService.get_pages'
 get_page_target = 'notes.services.RegistryService.get_page'
 save_page_target = 'notes.services.RegistryService.save_page'
 renderer_target = 'notes.text_processing.markdown.render'
-upload_file_target = 'notes.services.AttachmentStorage.upload'
-list_uploads_target = 'notes.services.AttachmentStorage.list'
-delete_file_target = 'notes.services.AttachmentStorage.delete'
+upload_file_target = 'notes.services.AttachmentStorage.save_attachment'
+list_uploads_target = 'notes.services.AttachmentStorage.list_attachments'
+delete_file_target = 'notes.services.AttachmentStorage.delete_attachment'
 
 a_string = 'some markdown result'
 
@@ -85,7 +85,7 @@ def test_upload_file_to_page(app):
     }
 
     request_context = app.test_request_context(
-        path='/pages/edit/1/attachements/',
+        path='/pages/edit/1/attachments/',
         data=data,
         content_type='multipart/form-data'
     )
@@ -122,7 +122,7 @@ def test_delete_file(app):
     file_name = 'foo.txt'
     delete_file_mock = mock.patch(delete_file_target)
     request_context = app.test_request_context(
-        path=f'/pages/edit/1/attachements/{file_name}',
+        path=f'/pages/edit/1/attachments/{file_name}',
     )
     with request_context, delete_file_mock as delete_file:
         res = notes.views.pages.pages.dalete_file(1, file_name)

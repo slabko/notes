@@ -10,9 +10,9 @@ get_pages_target = 'notes.services.RegistryService.get_pages'
 get_page_target = 'notes.services.RegistryService.get_page'
 save_page_target = 'notes.services.RegistryService.save_page'
 renderer_target = 'notes.text_processing.markdown.render'
-list_uploads_target = 'notes.services.AttachmentStorage.list'
-delete_file_target = 'notes.services.AttachmentStorage.delete'
-read_file_target = 'notes.services.AttachmentStorage.read'
+list_uploads_target = 'notes.services.AttachmentStorage.list_attachments'
+delete_file_target = 'notes.services.AttachmentStorage.delete_attachment'
+read_file_target = 'notes.services.AttachmentStorage.get_attachment_path'
 
 a_string = 'some markdown result'
 
@@ -69,7 +69,7 @@ def test_upload_controls(app):
         res = client.get('/pages/1/')
     data = res.data.decode('utf-8')
 
-    form_data = (r'<form action="/pages/edit/1/attachements/" '
+    form_data = (r'<form action="/pages/edit/1/attachments/" '
                  r'method="POST" enctype="multipart/form-data">')
     assert form_data in data
     assert f'<input type="hidden" value="1">' in data
@@ -98,7 +98,7 @@ def test_submit_edit(app):
     assert res.location == 'http://localhost/pages/1/'
 
 
-uploads_path = '/pages/edit/1/attachements/'
+uploads_path = '/pages/edit/1/attachments/'
 form_data = 'multipart/form-data'
 
 
@@ -143,7 +143,6 @@ def test_uploads_list(app, page):
     with storage, uploads, markdown, app.test_client() as client:
         res = client.get(f'/pages/{page.id}/')
     data = res.data.decode('utf-8')
-    print(data)
 
     for f in files:
         assert f'<a href="/pages/{page.id}/{f}">{f}</a>' in data
@@ -177,7 +176,7 @@ def test_delete_upload(app):
     file_name = 'foo.txt'
     delete_file_mock = mock.patch(delete_file_target)
     with app.test_client() as client, delete_file_mock as delete_file:
-        res = client.post(f'/pages/edit/1/attachements/{file_name}/delete')
+        res = client.post(f'/pages/edit/1/attachments/{file_name}/delete')
 
     delete_file.assert_called_once_with(1, file_name)
 

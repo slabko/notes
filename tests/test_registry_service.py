@@ -104,7 +104,7 @@ def test_save_without_update_does_not_make_an_update(storage):
     assert len(storage.get_history_for_page(id)) == 0
 
 
-def test_attachement(storage):
+def test_attachment(storage):
     file_id = str(uuid.uuid4())
     id = storage.save_page('foobar')
     storage.register_attachment(id, 'foo.txt', file_id)
