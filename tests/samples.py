@@ -1,7 +1,7 @@
 from datetime import datetime
-from notes.data.page import Page
+from notes.data.article import Article
 
-page1 = Page(
+page1 = Article(
     id=1,
     title='foo',
     preview='bar',
@@ -10,7 +10,7 @@ page1 = Page(
     body='foo\nbar'
 )
 
-page2 = Page(
+page2 = Article(
     id=1,
     title='bar',
     preview='foo',

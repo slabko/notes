@@ -1,18 +1,18 @@
 import io
 import notes.app
-import notes.data.storage
+import notes.services
 import notes.views.index
 from unittest import mock
 import notes.app
 from .samples import page1
 
-get_pages_target = 'notes.data.storage.Storage.get_pages'
-get_page_target = 'notes.data.storage.Storage.get_page'
-save_page_target = 'notes.data.storage.Storage.save_page'
+get_pages_target = 'notes.services.RegistryService.get_pages'
+get_page_target = 'notes.services.RegistryService.get_page'
+save_page_target = 'notes.services.RegistryService.save_page'
 renderer_target = 'notes.text_processing.markdown.render'
-upload_file_target = 'notes.data.uploads.Uploads.upload'
-list_uploads_target = 'notes.data.uploads.Uploads.list'
-delete_file_target = 'notes.data.uploads.Uploads.delete'
+upload_file_target = 'notes.services.AttachmentStorage.upload'
+list_uploads_target = 'notes.services.AttachmentStorage.list'
+delete_file_target = 'notes.services.AttachmentStorage.delete'
 
 a_string = 'some markdown result'
 

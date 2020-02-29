@@ -1,5 +1,5 @@
 import flask
-from notes.data.storage import main_service
+from notes.services.registry_service import main_service
 
 blueprint = flask.Blueprint('index', __name__, template_folder='templates')
 

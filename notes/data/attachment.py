@@ -3,7 +3,7 @@ from datetime import datetime
 from .basemetadata import SqlAlchemyBase
 
 
-class Upload(SqlAlchemyBase):
+class Attachment(SqlAlchemyBase):
     __tablename__ = 'uploads'
 
     id = sa.Column(

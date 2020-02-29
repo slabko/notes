@@ -1,9 +1,9 @@
 import flask
 import mimetypes
 from notes.text_processing import markdown
-from notes.data.storage import main_service as storage_service
-from notes.data.uploads import main_service as uploads_service
-from notes.data.page import Page
+from notes.services.registry_service import main_service as storage_service
+from notes.services.attachment_service import main_service as uploads_service
+from notes.data.article import Article
 from werkzeug.utils import secure_filename
 
 blueprint = flask.Blueprint(
@@ -34,7 +34,7 @@ def edit(page_id):
 
 @blueprint.route('/pages/edit/', methods=['GET'])
 def edit_new():
-    page = Page()
+    page = Article()
     page.body = ''
 
     return flask.render_template('pages/edit.html', page=page)

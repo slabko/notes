@@ -6,7 +6,7 @@ To run the script call
 
 """
 import os
-from notes.data import storage
+from notes.services import registry_service
 
 
 def main():
@@ -16,14 +16,14 @@ def main():
         markdown_content = fp.read()
 
     init_db()
-    storage.main_service.save_page(markdown_content)
+    registry_service.main_service.save_page(markdown_content)
 
 
 def init_db():
     current_directory = os.getcwd()
     db_path = os.path.join(current_directory, 'notes.sqlite')
     db_path = os.path.abspath(db_path)
-    storage.init_main_service('sqlite:///' + db_path)
+    registry_service.init_main_service('sqlite:///' + db_path)
 
 
 if __name__ == "__main__":

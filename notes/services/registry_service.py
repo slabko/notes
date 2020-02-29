@@ -2,21 +2,20 @@ import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from typing import List
 from datetime import datetime
-from .basemetadata import SqlAlchemyBase
-from .page import Page
-from .history import History
-from .upload import Upload
-from . import __all_models  # noqa: F401
+from notes.data.basemetadata import SqlAlchemyBase
+from notes.data.article import Article, ArticleHistory
+from notes.data.attachment import Attachment
+from notes.data import __all_models  # noqa: F401
 
 __main_service = None
 
 
 def init_main_service(connection_string):
     global __main_service
-    __main_service = Storage(connection_string)
+    __main_service = RegistryService(connection_string)
 
 
-class Storage:
+class RegistryService:
 
     def __init__(self, connection_string):
         engine = sa.create_engine(connection_string, echo=False)
@@ -27,14 +26,14 @@ class Storage:
         session = self.__factory()
 
         if page_id:
-            page = session.query(Page).\
-                filter(Page.id == page_id).\
+            page = session.query(Article).\
+                filter(Article.id == page_id).\
                 first()
 
             if page.body == body:
                 return page_id
 
-            history = History()
+            history = ArticleHistory()
             history.page_id = page.id
             history.body = page.body
             history.updated_at = page.updated_at
@@ -42,7 +41,7 @@ class Storage:
 
             page.updated_at = datetime.now()
         else:
-            page = Page()
+            page = Article()
             session.add(page)
 
         try:
@@ -57,42 +56,42 @@ class Storage:
         session.commit()
         return page.id
 
-    def get_page(self, page_id) -> Page:
+    def get_page(self, page_id) -> Article:
         session = self.__factory()
-        page = session.query(Page).\
-            filter(Page.id == page_id).\
+        page = session.query(Article).\
+            filter(Article.id == page_id).\
             one()
         return page
 
     def get_pages(self):
         session = self.__factory()
-        pages = session.query(Page).all()
+        pages = session.query(Article).all()
         return pages
 
-    def get_history_for_page(self, page_id) -> List[History]:
+    def get_history_for_page(self, page_id) -> List[ArticleHistory]:
         session = self.__factory()
-        page = session.query(Page).\
-            filter(Page.id == page_id).\
+        page = session.query(Article).\
+            filter(Article.id == page_id).\
             one()
 
-        history = session.query(History).\
-            filter(History.page_id == page.id).\
+        history = session.query(ArticleHistory).\
+            filter(ArticleHistory.page_id == page.id).\
             all()
 
         return history
 
-    def register_attachement(self, page_id, file_name, file_id):
+    def register_attachment(self, page_id, file_name, file_id):
         session = self.__factory()
-        upload = Upload(
+        upload = Attachment(
             id=file_id,
             page_id=page_id,
             file_name=file_name
         )
         session.add(upload)
 
-        existing = session.query(Upload).\
-            filter(Upload.id == page_id).\
-            filter(Upload.file_name == file_name).\
+        existing = session.query(Attachment).\
+            filter(Attachment.id == page_id).\
+            filter(Attachment.file_name == file_name).\
             first()
 
         if existing:
@@ -100,20 +99,20 @@ class Storage:
 
         session.commit()
 
-    def get_attachement_file_id(self, page_id, file_name) -> str:
+    def get_attachment_file_id(self, page_id, file_name) -> str:
         session = self.__factory()
-        upload = session.query(Upload).\
-            filter(Upload.page_id == page_id).\
-            filter(Upload.file_name == file_name).\
+        upload = session.query(Attachment).\
+            filter(Attachment.page_id == page_id).\
+            filter(Attachment.file_name == file_name).\
             one()
 
         return upload.id
 
-    def get_page_attachments(self, page_id) -> List[Upload]:
+    def get_page_attachments(self, page_id) -> List[Attachment]:
         session = self.__factory()
 
-        uploads = session.query(Upload).\
-            filter(Upload.page_id == page_id).\
+        uploads = session.query(Attachment).\
+            filter(Attachment.page_id == page_id).\
             all()
 
         return uploads
@@ -121,15 +120,15 @@ class Storage:
     def delete_attachment(self, page_id, file_name):
         session = self.__factory()
 
-        session.query(Upload).\
-            filter(Upload.page_id == page_id).\
-            filter(Upload.file_name == file_name).\
+        session.query(Attachment).\
+            filter(Attachment.page_id == page_id).\
+            filter(Attachment.file_name == file_name).\
             delete()
 
         session.commit()
 
 
-def main_service() -> Storage:
+def main_service() -> RegistryService:
     if __main_service:
         return __main_service
     else:

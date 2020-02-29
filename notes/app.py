@@ -1,6 +1,6 @@
 import os
 import flask
-import notes.data.storage
+import notes.services.registry_service
 
 app = flask.Flask(__name__)
 
@@ -15,7 +15,7 @@ def main():
 def setup_db():
     current_directory = os.getcwd()
     db_path = os.path.join(current_directory, 'notes.sqlite')
-    notes.data.storage.init_main_service('sqlite:///' + db_path)
+    notes.services.registry_service.init_main_service('sqlite:///' + db_path)
 
 
 def setup_uploads():
