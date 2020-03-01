@@ -4,7 +4,7 @@ from .basemetadata import SqlAlchemyBase
 
 
 class Attachment(SqlAlchemyBase):
-    __tablename__ = 'uploads'
+    __tablename__ = 'attachments'
 
     id = sa.Column(
         sa.String,

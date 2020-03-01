@@ -1,4 +1,5 @@
 PYTHONPATH := $(CURDIR)
+TAG := $(shell date '+%Y_%m_%d')_$(shell git rev-parse --short HEAD)
 
 run:
 	python -m notes.app
@@ -12,3 +13,16 @@ test:
 
 db:
 	python -m notes.bin.make_test_data
+
+docker:
+	docker build . -t slabko/${TAG}
+
+docker-run:
+	docker-compose build
+	docker-compose up -d postgres
+	sleep 5
+	docker-compose up -d
+
+docker-stop:
+	docker-compose stop
+	docker-compose rm
