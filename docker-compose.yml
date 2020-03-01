@@ -1,0 +1,27 @@
+version: '3.1'
+
+services:
+
+  postgres:
+    image: postgres:9.6
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: notes
+      POSTGRES_PASSWORD: jb9RBP8k
+    volumes:
+      - "./pgdata/:/var/lib/postgresql/data/"
+
+  notes:
+    build: .
+    environment:
+      NOTES_DB: postgres://notes:jb9RBP8k@postgres/notes
+      NOTES_ATTACHMENTS: /var/notes/attachments/
+    ports:
+      - "5000:5000"
+    volumes:
+      - "./attachments/:/var/notes/attachments/"
+    depends_on:
+      # docker-compose can start notes before postgres is ready.
+      # Start postgres separately or restart notes after everythin has started
+      - postgres
