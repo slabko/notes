@@ -1,5 +1,7 @@
 import os
 import flask
+import sqlalchemy
+import sqlalchemy.orm
 import notes.services.registry_service
 
 app = flask.Flask(__name__)
@@ -24,8 +26,9 @@ def setup_db():
         db_path = os.path.join(current_directory, 'notes.sqlite')
         connection_string = 'sqlite:///' + db_path
 
-    print(connection_string)
-    notes.services.registry_service.init_main_service(connection_string)
+    engine = sqlalchemy.create_engine(connection_string, echo=False)
+    session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
+    notes.services.registry_service.init_main_service(session_maker)
 
 
 def setup_uploads():

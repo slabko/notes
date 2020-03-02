@@ -1,4 +1,6 @@
 import pytest
+import sqlalchemy
+import sqlalchemy.orm
 from contextlib import contextmanager
 import notes.app
 import notes.services.registry_service
@@ -12,7 +14,11 @@ from tempfile import TemporaryDirectory
 def app():
     notes.app.app.config['TESTING'] = True
     notes.app.register_blueprints()
-    notes.services.registry_service.init_main_service('sqlite://')
+
+    connection_string = 'sqlite://'
+    engine = sqlalchemy.create_engine(connection_string, echo=False)
+    session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
+    notes.services.registry_service.init_main_service(session_maker)
 
     with TemporaryDirectory() as temp_dir:
         notes.services.attachment_service.init_main_service(temp_dir)

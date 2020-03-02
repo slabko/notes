@@ -3,11 +3,22 @@ import pytest
 import uuid
 from freezegun import freeze_time
 from notes.services.registry_service import RegistryService
+import sqlalchemy
+import sqlalchemy.orm
+import notes.data
 
+connection_string = 'sqlite://'
+# connection_string = 'postgresql://notes:jb9RBP8k@localhost/notes'
 
 @pytest.fixture
 def storage():
-    return RegistryService('sqlite://')
+    engine = sqlalchemy.create_engine(connection_string)
+    session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
+
+    from notes.data.basemetadata import SqlAlchemyBase
+    SqlAlchemyBase.metadata.drop_all(engine)
+
+    return RegistryService(session_maker)
 
 
 def test_multiline_article(storage: RegistryService):
