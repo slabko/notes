@@ -23,7 +23,7 @@ def setup_db():
         connection_string = os.environ['NOTES_DB']
     except KeyError:
         current_directory = os.getcwd()
-        db_path = os.path.join(current_directory, 'notes.sqlite')
+        db_path = os.path.join(current_directory, 'localdata/' 'notes.sqlite')
         connection_string = 'sqlite:///' + db_path
 
     engine = sqlalchemy.create_engine(connection_string, echo=False)
@@ -36,7 +36,7 @@ def setup_uploads():
         attachments_path = os.environ['NOTES_ATTACHMENTS']
     except KeyError:
         current_directory = os.getcwd()
-        attachments_path = os.path.join(current_directory, 'attachmetns/')
+        attachments_path = os.path.join(current_directory, 'localdata/', 'attachmetns/')
 
     notes.services.attachment_service.init_main_service(attachments_path)
 

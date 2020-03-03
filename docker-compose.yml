@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: notes
       POSTGRES_PASSWORD: jb9RBP8k
     volumes:
-      - "./pgdata/:/var/lib/postgresql/data/"
+      - "./localdata/pgdata/:/var/lib/postgresql/data/"
 
   notes:
     build: .
@@ -20,7 +20,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - "./attachments/:/var/notes/attachments/"
+      - "./localdata/attachments/:/var/notes/attachments/"
     depends_on:
       # docker-compose can start notes before postgres is ready.
       # Start postgres separately or restart notes after everythin has started

@@ -1,3 +1,9 @@
+# Idea
+.idea
+
+# test data annd databases
+localdata/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
