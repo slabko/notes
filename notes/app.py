@@ -1,4 +1,5 @@
 import os
+import errno
 import flask
 import sqlalchemy
 import sqlalchemy.orm
@@ -22,8 +23,7 @@ def setup_db():
     try:
         connection_string = os.environ['NOTES_DB']
     except KeyError:
-        current_directory = os.getcwd()
-        db_path = os.path.join(current_directory, 'localdata/' 'notes.sqlite')
+        db_path = os.path.join(get_localdata_dir(), 'notes.sqlite')
         connection_string = 'sqlite:///' + db_path
 
     engine = sqlalchemy.create_engine(connection_string, echo=False)
@@ -35,10 +35,22 @@ def setup_uploads():
     try:
         attachments_path = os.environ['NOTES_ATTACHMENTS']
     except KeyError:
-        current_directory = os.getcwd()
-        attachments_path = os.path.join(current_directory, 'localdata/', 'attachmetns/')
+        attachments_path = os.path.join(get_localdata_dir(), 'attachmetns/')
 
     notes.services.attachment_service.init_main_service(attachments_path)
+
+
+def get_localdata_dir():
+    current_directory = os.getcwd()
+    localdata_path = os.path.join(current_directory, 'localdata/')
+
+    try:
+        os.mkdir(localdata_path)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
+    return localdata_path
 
 
 def register_blueprints():
