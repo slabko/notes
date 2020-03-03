@@ -1,5 +1,5 @@
 # notes
-An application I use for "LiveJournal-ing" with Markdown and MathJax
+The application I use for "LiveJournal-ing" with Markdown and MathJax
 
 
 ## Running
