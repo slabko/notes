@@ -10,3 +10,5 @@ But just in case I have amnesia, the easist way to see what application does, is
 ```
 docker run -d -p 5000:5000 slabko/notes
 ```
+
+And then type in browser `http://localhost:5000/`
