@@ -9,7 +9,9 @@ check:
 	find . -type d -name '.venv' -prune -o -name '*.py' -print | xargs flake8
 
 test:
-	python -m pytest tests/
+	coverage run --source ./notes/ -m pytest tests/
+	coverage report -m
+	coverage html
 
 db:
 	python -m notes.bin.make_test_data
