@@ -5,10 +5,10 @@ from freezegun import freeze_time
 from notes.services.registry_service import RegistryService
 import sqlalchemy
 import sqlalchemy.orm
-import notes.data
 
 connection_string = 'sqlite://'
 # connection_string = 'postgresql://notes:jb9RBP8k@localhost/notes'
+
 
 @pytest.fixture
 def storage():
@@ -16,8 +16,10 @@ def storage():
     session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
 
     from notes.data.basemetadata import SqlAlchemyBase
+    print('\n------> drop all  |\n')
     SqlAlchemyBase.metadata.drop_all(engine)
 
+    print('\n------> ...done |\n')
     return RegistryService(session_maker)
 
 
@@ -115,7 +117,7 @@ def test_save_without_update_does_not_make_an_update(storage):
     assert len(storage.get_history_for_page(id)) == 0
 
 
-def test_attachment(storage):
+def test_attachment(storage: RegistryService):
     file_id = str(uuid.uuid4())
     id = storage.save_page('foobar')
     storage.register_attachment(id, 'foo.txt', file_id)
@@ -125,7 +127,8 @@ def test_attachment(storage):
     assert res == file_id
 
 
-def test_get_page_attachments(storage):
+def test_get_page_attachments(storage: RegistryService):
+    print('test_get_page_attachments')
     file_ids = [str(uuid.uuid4()) for x in range(4)]
     file_names = [f'foo_{x}.txt' for x in range(4)]
     page_id = storage.save_page('foobar')
@@ -155,3 +158,17 @@ def test_delete_attachment(storage: RegistryService):
     file_names = file_names[:1] + file_names[2:]
     stored_file_names = [u.file_name for u in res]
     assert file_names == stored_file_names
+
+
+def test_attachment_with_the_same_name_is_deleted(storage: RegistryService):
+    file_id_1, file_id_2 = str(uuid.uuid4()), str(uuid.uuid4())
+    page_id = storage.save_page('foobar')
+
+    storage.register_attachment(page_id, 'foo.txt', file_id_1)
+    storage.register_attachment(page_id, 'foo.txt', file_id_2)
+
+    res = storage.get_page_attachments(page_id)
+    assert len(res) == 1
+    attachment = res[0]
+    assert attachment.id == file_id_2
+    assert attachment.file_name == 'foo.txt'

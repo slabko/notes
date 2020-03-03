@@ -1,4 +1,3 @@
-import sqlalchemy as sa
 from typing import List
 from datetime import datetime
 from notes.data.basemetadata import SqlAlchemyBase
@@ -23,19 +22,17 @@ class RegistryService:
         engine = session.get_bind()
         SqlAlchemyBase.metadata.create_all(engine)
 
-    
     @contextmanager
     def create_session(self):
         session = self.__factory(expire_on_commit=False)
         try:
             yield session
             session.commit()
-        except:
+        except:  # noqa: E722
             session.rollback()
             raise
         finally:
             session.close()
-
 
     def save_page(self, body, page_id=None) -> str:
         with self.create_session() as session:
@@ -97,26 +94,22 @@ class RegistryService:
 
     def register_attachment(self, page_id, file_name, file_id):
         with self.create_session() as session:
+
+            session.query(Attachment).\
+                filter(Attachment.page_id == page_id).\
+                filter(Attachment.file_name == file_name).\
+                delete()
+
             upload = Attachment(
                 id=file_id,
                 page_id=page_id,
                 file_name=file_name
             )
             session.add(upload)
-
-            existing = session.query(Attachment).\
-                filter(Attachment.id == page_id).\
-                filter(Attachment.file_name == file_name).\
-                first()
-
-            if existing:
-                existing.delete()
-
             session.commit()
 
     def get_attachment_file_id(self, page_id, file_name) -> str:
         with self.create_session() as session:
-            session = self.__factory()
             upload = session.query(Attachment).\
                 filter(Attachment.page_id == page_id).\
                 filter(Attachment.file_name == file_name).\
